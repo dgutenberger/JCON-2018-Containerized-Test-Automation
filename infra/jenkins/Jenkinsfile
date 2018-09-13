@@ -1,0 +1,62 @@
+stage('dev') {
+    node{
+        checkout scm
+
+        openshift.withProject( "todo-app-dev" ) {
+            def buildTemplate = openshift.process("-f infra/yml/s2i-todo-app-build-template.yml")
+            openshift.apply(buildTemplate)
+
+            openshift.startBuild("todo-app", "--wait=true")
+
+            def deploymentTemplate = openshift.process("-f infra/yml/todo-app-deployment-template.yml",
+                    "-p", "URL=todo-app-dev.192.168.99.101.nip.io")
+            openshift.apply(deploymentTemplate)
+
+            openshift.selector("dc/todo-app").rollout().latest()
+            openshift.selector("dc/todo-app").rollout().status("--watch=true")
+
+            openshift.tag("todo-app-dev/todo-app:latest todo-app-int/todo-app:latest")
+        }
+    }
+}
+
+
+
+podTemplate(cloud: "openshift", namespace: "todo-app-int") {
+    node('maven'){
+        checkout scm
+
+        stage('integration-tests') {
+            openshift.withProject( "todo-app-int" ) {
+                def deploymentTemplate = openshift.process("-f infra/yml/todo-app-deployment-template.yml",
+                        "-p", "URL=todo-app-int.192.168.99.101.nip.io")
+                openshift.apply(deploymentTemplate)
+
+                openshift.selector("dc/todo-app").rollout().latest()
+                openshift.selector("dc/todo-app").rollout().status("--watch=true")
+            }
+            sh "mvn clean verify -Dskip.integration.tests=false"
+        }
+
+        stage('pre-production'){
+            input "Deploy to production?"
+
+            openshift.withProject( "todo-app-int" ) {
+                openshift.tag("todo-app-int/todo-app:latest todo-app-prod/todo-app:latest")
+            }
+        }
+    }
+}
+
+stage('prod') {
+    node{
+        openshift.withProject( "todo-app-prod" ) {
+            def deploymentTemplate = openshift.process("-f infra/yml/todo-app-deployment-template.yml")
+            openshift.apply(deploymentTemplate)
+
+            openshift.selector("dc/todo-app").rollout().latest()
+            openshift.selector("dc/todo-app").rollout().status("--watch=true")
+        }
+    }
+}
+
