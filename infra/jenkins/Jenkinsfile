@@ -10,9 +10,6 @@ stage('dev') {
     }
 }
 
-
-
-
 podTemplate(cloud: "openshift", namespace: "todo-app-int") {
     node('maven'){
         checkout scm
@@ -50,7 +47,7 @@ private void buildTodoApp() {
     openshift.startBuild("todo-app", "--wait=true")
 }
 
-private void deployTodoApp(def routeUrl) {
+private void deployTodoApp(String routeUrl) {
     def deploymentTemplate = openshift.process("-f infra/yml/todo-app-deployment-template.yml",
             "-p", "URL=" + routeUrl)
     openshift.apply(deploymentTemplate)
