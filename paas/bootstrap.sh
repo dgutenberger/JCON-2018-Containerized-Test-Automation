@@ -3,6 +3,7 @@
 MINISHIFT_VM_DRIVER=virtualbox
 MINISHIFT_MEMORY=8GB
 MINISHIFT_DISK_SIZE=40GB
+MINISHIFT_CPU_COUNT=3
 
 OPENSHIFT_VERSION=3.10.0
 
@@ -12,7 +13,9 @@ minishift start \
         --vm-driver=${MINISHIFT_VM_DRIVER} \
         --memory=${MINISHIFT_MEMORY} \
         --openshift-version ${OPENSHIFT_VERSION} \
-        --disk-size=${MINISHIFT_DISK_SIZE}
+        --disk-size=${MINISHIFT_DISK_SIZE} \
+        --cpus=${MINISHIFT_CPU_COUNT}
+
 oc login -u system:admin
 
 #Setup gogs repository
