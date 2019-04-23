@@ -16,7 +16,7 @@ minishift start \
         --disk-size=${MINISHIFT_DISK_SIZE} \
         --cpus=${MINISHIFT_CPU_COUNT}
 
-oc login -u system:admin $(minishift ip)
+oc login -u system:admin
 
 #Setup gogs repository
 oc new-project gogs
