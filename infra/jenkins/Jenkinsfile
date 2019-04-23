@@ -4,7 +4,7 @@ stage('dev') {
 
         openshift.withProject( "todo-app-dev" ) {
             buildTodoApp()
-            deployTodoApp("todo-app-dev.192.168.99.101.nip.io")
+            deployTodoApp("todo-app-dev.192.168.99.107.nip.io")
             openshift.tag("todo-app-dev/todo-app:latest todo-app-int/todo-app:latest")
         }
     }
@@ -16,7 +16,7 @@ podTemplate(cloud: "openshift", namespace: "todo-app-int") {
 
         stage('integration-tests') {
             openshift.withProject( "todo-app-int" ) {
-                deployTodoApp("todo-app-int.192.168.99.101.nip.io")
+                deployTodoApp("todo-app-int.192.168.99.107.nip.io")
             }
 
             sh "mvn clean verify -Dskip.integration.tests=false"
@@ -35,7 +35,7 @@ podTemplate(cloud: "openshift", namespace: "todo-app-int") {
 stage('prod') {
     node{
         openshift.withProject( "todo-app-prod" ) {
-            deployTodoApp("todo-app.192.168.99.101.nip.io")
+            deployTodoApp("todo-app.192.168.99.107.nip.io")
         }
     }
 }

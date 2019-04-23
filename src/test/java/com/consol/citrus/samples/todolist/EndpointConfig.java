@@ -31,7 +31,7 @@ public class EndpointConfig {
     public HttpClient todoClient() {
         return CitrusEndpoints.http()
                             .client()
-                            .requestUrl("http://todo-app-int.192.168.99.101.nip.io")
+                            .requestUrl("http://todo-app-int.192.168.99.107.nip.io")
                             .build();
     }
 }
