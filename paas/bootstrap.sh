@@ -8,7 +8,7 @@ MINISHIFT_CPU_COUNT=3
 OPENSHIFT_VERSION=3.10.0
 
 
-minishift profiles set jcon-containerized-test-automation
+minishift profiles set containerized-test-automation
 minishift start \
         --vm-driver=${MINISHIFT_VM_DRIVER} \
         --memory=${MINISHIFT_MEMORY} \
@@ -16,7 +16,7 @@ minishift start \
         --disk-size=${MINISHIFT_DISK_SIZE} \
         --cpus=${MINISHIFT_CPU_COUNT}
 
-oc login -u system:admin
+oc login -u system:admin $(minishift ip)
 
 #Setup gogs repository
 oc new-project gogs
